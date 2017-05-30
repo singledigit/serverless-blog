@@ -3,7 +3,7 @@
 const shell = require('shelljs');
 const fs = require('fs');
 const _ = require('lodash');
-let stacks, services, deployedServices, toBeDeployed, toBeUpdated;
+let stacks, services, deployedServices, toBeDeployed, toBeUpdated, toBeDeleted;
 
 // get stacks
 let stackCommand = shell.exec(`aws cloudformation list-stacks`, { silent: true })
@@ -28,6 +28,8 @@ deployedServices = stacks.filter(item => {
 toBeDeployed = _.difference(services, deployedServices.map(item => { return _.trimEnd(item.StackName, '-cicd') }));
 
 toBeUpdated = _.intersection(services, deployedServices.map(item => { return _.trimEnd(item.StackName, '-cicd') }));
+
+toBeDeleted = _.difference(deployedServices.map(item => { return _.trimEnd(item.StackName, '-cicd') }), services);
 
 const callStack = (service, action) => {
     return new Promise((resolve, reject) => {
