@@ -6,7 +6,7 @@ const _ = require('lodash');
 let stacks, services, deployedServices, toBeDeployed, toBeUpdated;
 
 // get stacks
-let stackCommand = shell.exec(`aws cloudformation list-stacks --profile singledigit`, { silent: true })
+let stackCommand = shell.exec(`aws cloudformation list-stacks`, { silent: true })
 
 if (stackCommand.code !== 0) {
     shell.echo('Could not get current stacks from AWS')
