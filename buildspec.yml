@@ -4,7 +4,8 @@ phases:
   install:
     commands:
       - npm install
-      - if [$SERVICE = "agent-service"]; then ./bin update-cics.js; fi
+      - chmod 777 ./bin/*
+      - ./bin/build.js
   pre_build:
     commands:
   build:
