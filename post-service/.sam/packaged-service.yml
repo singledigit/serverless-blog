@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Post Service
+Resources:
+  PostServiceCreate:
+    Properties:
+      CodeUri: s3://singledigit-dev-uploads/ad676abd2c4641ad5d70bd1e11462138
+      Environment:
+        PostsTable:
+          Fn::GetAtt:
+          - PostsTable
+          - Name
+      FunctionName: post-service-create
+      Handler: index.create
+      Policies:
+      - AWSLambdaFullAccess
+      Runtime: nodejs6.10
+    Type: AWS::Serverless::Function
+  PostsTable:
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: id
+        AttributeType: S
+      - AttributeName: category
+        AttributeType: S
+      KeySchema:
+      - AttributeName: id
+        KeyType: HASH
+      - AttributeName: category
+        KeyType: RANGE
+      LocalSecondaryIndexes:
+      - LocalSecondaryIndexes
+      ProvisionedThroughput:
+      - ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+    Type: AWS::DynamoDB::Table
+Transform: AWS::Serverless-2016-10-31

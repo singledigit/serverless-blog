@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Base Infrastructure
+
+Parameters:
+  CFTBucket:
+    Type: String
+    Description: S3 bucket containing CFT files
+  Environment:
+    Type: String
+    Description: Environment to build for
+    Default: dev
+  GitHubOwner:
+    Type: String
+    Description: GitHub Owner Name
+  GitHubToken:
+    Type: String
+    Description: GitHub Token
+  Repo:
+    Type: String
+    Description: GitHub Repo
+  Branch:
+    Type: String
+    Description: GitHub Branch
+
+Resources:
+  ## Generic Notification Topic
+  NotificationSNS:
+    Type: "AWS::SNS::Topic"
+  
+  ## Generic Build Role
+  BuildRole:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      TemplateURL: !Sub
+        - https://s3.amazonaws.com/${bucket}/nested/build-role.yml
+        - {bucket: !Ref CFTBucket}
+
+  ## Service CICD Agent Pipeline
+  ServiceAgentPipeline:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      Parameters:
+        Environment: !Ref Environment
+        GitHubOwner: !Ref GitHubOwner
+        GitHubToken: !Ref GitHubToken
+        Repo: !Ref Repo
+        Branch: !Ref Branch
+      TemplateURL: !Sub
+        - https://s3.amazonaws.com/${bucket}/nested/agent-pipeline.yml
+        - {bucket: !Ref CFTBucket}
+
+Outputs:
+  SNSTopicArn:
+    Value: !Ref NotificationSNS
+    Export:
+      Name: NotificationTopicArn
+
+  BuildRoleArn:
+    Value: !GetAtt BuildRole.Outputs.BuildRoleArn
+    Export:
+      Name: BuildRoleArn
