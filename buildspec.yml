@@ -1,0 +1,13 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - npm install
+      - if [$SERVICE = "agent-service"]; then ./bin update-cics.js; fi
+  pre_build:
+    commands:
+  build:
+    commands:
+  post_build:
+    commands:
