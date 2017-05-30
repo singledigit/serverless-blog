@@ -2,6 +2,9 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: Service CICD
 
 Parameters:
+  CFTBucket:
+    Type: String
+    Description: S3 bucket containing CFT files
   Environment:
     Type: String
     Description: Environment to build for
@@ -80,6 +83,8 @@ Resources:
         EnvironmentVariables:
             - Name: SERVICE
               Value: agent-service
+            - Name: CFT_BUCKET
+              Value: !Ref CFTBucket
             - Name: ENVIRONMENT
               Value: !Ref Environment
             - Name: GITHUB_OWNER

@@ -1,14 +1,5 @@
 #!/usr/bin/env node
 
-const params = {
-    GitHubOwner: 'bob',
-    Repo: 'bob',
-    Branch: 'master',
-    Token: '12345',
-    Bucket: 'ej-blog-cft',
-    Profile: 'singledigit'
-}
-
 const shell = require('shelljs');
 const fs = require('fs');
 const _ = require('lodash');
@@ -42,14 +33,13 @@ const callStack = (service, action) => {
     return new Promise((resolve, reject) => {
         let stackCommand = shell.exec(
             `aws cloudformation ${action}-stack --stack-name ${service}-cicd \
-            --template-url https://s3.amazonaws.com/${params.Bucket}/api-cicd.yml \
+            --template-url https://s3.amazonaws.com/${process.env.CFT_BUCKET}/api-cicd.yml \
             --capabilities CAPABILITY_NAMED_IAM \
-            --profile ${params.Profile} \
-            --parameters ParameterKey=GitHubOwner,ParameterValue=${params.GitHubOwner} \
-            ParameterKey=Repo,ParameterValue=${params.Repo} \
-            ParameterKey=Branch,ParameterValue=${params.Branch} \
-            ParameterKey=GitHubOwner,ParameterValue=${params.GitHubOwner} \
-            ParameterKey=Token,ParameterValue=${params.Token} \
+            --parameters ParameterKey=GitHubOwner,ParameterValue=${process.env.GITHUB_OWNER} \
+            ParameterKey=Environment,ParameterValue=${process.env.ENVIRONMENT} \
+            ParameterKey=Repo,ParameterValue=${process.env.REPO} \
+            ParameterKey=Branch,ParameterValue=${process.env.BRANCH} \
+            ParameterKey=GitHubToken,ParameterValue=${process.env.GITHUB_TOKEN} \
             ParameterKey=Service,ParameterValue=${service}`
         )
 
