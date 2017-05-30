@@ -33,7 +33,7 @@ const callStack = (service, action) => {
     return new Promise((resolve, reject) => {
         let stackCommand = shell.exec(
             `aws cloudformation ${action}-stack --stack-name ${service}-cicd \
-            --template-url https://s3.amazonaws.com/${process.env.CFT_BUCKET}/api-cicd.yml \
+            --template-url https://s3.amazonaws.com/${process.env.CFT_BUCKET}/nested/api-pipeline.yml \
             --capabilities CAPABILITY_NAMED_IAM \
             --parameters ParameterKey=GitHubOwner,ParameterValue=${process.env.GITHUB_OWNER} \
             ParameterKey=Environment,ParameterValue=${process.env.ENVIRONMENT} \
