@@ -6,7 +6,7 @@ const _ = require('lodash');
 let stacks, services, deployedServices, toBeDeployed, toBeUpdated, toBeDeleted;
 
 // get stacks
-let stackCommand = shell.exec(`aws cloudformation list-stacks`, { silent: true })
+let stackCommand = shell.exec(`aws cloudformation list-stacks --profile singledigit`, { silent: true })
 
 if (stackCommand.code !== 0) {
     shell.echo('Could not get current stacks from AWS')
@@ -26,13 +26,10 @@ deployedServices = stacks.filter(item => {
 })
 
 toBeDeployed = _.difference(services, deployedServices.map(item => { return _.trimEnd(item.StackName, '-cicd') }));
-console.log('Services to be Deployed', toBeDeployed);
 
 toBeUpdated = _.intersection(services, deployedServices.map(item => { return _.trimEnd(item.StackName, '-cicd') }));
-console.log('Services to be Updated', toBeUpdated);
 
 toBeDeleted = _.difference(deployedServices.map(item => { return _.trimEnd(item.StackName, '-cicd') }), services);
-console.log('Services to be Deleted', toBeDeleted);
 
 const callStack = (service, action) => {
     return new Promise((resolve, reject) => {
@@ -83,10 +80,26 @@ const installNew = () => {
 
 const deleteOld = () => {
     toBeDeleted.forEach(item => {
+        console.log(`Managing stack ${item}`)
         shell.echo(`Deleteing ${item}-cicd`);
-        shell.exec(`aws cloudformation delete-stack --stack-name ${item}-cicd`)
+
+        let d = JSON.parse(shell.exec(`aws cloudformation describe-stack-resources --stack-name ${item}-cicd --profile singledigit`).stdout).StackResources
+        console.log('Stack', d);
+        let c = d.filter(i => {
+            return i.ResourceType === 'AWS::S3::BUCKET' 
+        })
+
+        d.forEach(bucket => {
+            // empty bucket
+            console.log(`Deleting items from s3://${bucket}`)
+            //shell.exec(`aws s3 rm --recursive s3://${bucket} --profile singledigit`);
+            // delete bucket
+            console.log(`Deleteing bucket ${bucket}`)
+            //shell.exec(`aws s3api delete-bucket --bucket ${bucket}`)
+        })
+        //shell.exec(`aws cloudformation delete-stack --stack-name ${item}-cicd --profile singledigit`)
     })
 }
 
-deleteOld();
+//deleteOld();
 installNew();
