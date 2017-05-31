@@ -26,10 +26,13 @@ deployedServices = stacks.filter(item => {
 })
 
 toBeDeployed = _.difference(services, deployedServices.map(item => { return _.trimEnd(item.StackName, '-cicd') }));
+console.log('Services to be Deployed', toBeDeployed);
 
 toBeUpdated = _.intersection(services, deployedServices.map(item => { return _.trimEnd(item.StackName, '-cicd') }));
+console.log('Services to be Updated', toBeUpdated);
 
 toBeDeleted = _.difference(deployedServices.map(item => { return _.trimEnd(item.StackName, '-cicd') }), services);
+console.log('Services to be Deleted', toBeDeleted);
 
 const callStack = (service, action) => {
     return new Promise((resolve, reject) => {
@@ -78,4 +81,12 @@ const installNew = () => {
     if (process.argv[2] === '--update') updateAll();
 }
 
+const deleteOld = () => {
+    toBeDeleted.forEach(item => {
+        shell.echo(`Deleteing ${item}-cicd`);
+        shell.exec(`aws cloudformation delete-stack --stack-name ${item}-cicd`)
+    })
+}
+
+deleteOld();
 installNew();
