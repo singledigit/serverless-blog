@@ -6,7 +6,7 @@ const _ = require('lodash');
 let stacks, services, deployedServices, toBeDeployed, toBeUpdated, toBeDeleted;
 
 // get stacks
-let stackCommand = shell.exec(`aws cloudformation list-stacks --profile singledigit`, { silent: true })
+let stackCommand = shell.exec(`aws cloudformation list-stacks`, { silent: true })
 
 if (stackCommand.code !== 0) {
     shell.echo('Could not get current stacks from AWS')
@@ -92,12 +92,12 @@ const deleteOld = () => {
         d.forEach(bucket => {
             // empty bucket
             console.log(`Deleting items from s3://${bucket}`)
-            //shell.exec(`aws s3 rm --recursive s3://${bucket} --profile singledigit`);
+            //shell.exec(`aws s3 rm --recursive s3://${bucket}`);
             // delete bucket
             console.log(`Deleteing bucket ${bucket}`)
             //shell.exec(`aws s3api delete-bucket --bucket ${bucket}`)
         })
-        //shell.exec(`aws cloudformation delete-stack --stack-name ${item}-cicd --profile singledigit`)
+        //shell.exec(`aws cloudformation delete-stack --stack-name ${item}-cicd`)
     })
 }
 
