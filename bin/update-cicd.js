@@ -83,23 +83,20 @@ const deleteOld = () => {
         console.log(`Managing stack ${item}`)
         shell.echo(`Deleteing ${item}-cicd`);
 
-        let d = JSON.parse(shell.exec(`aws cloudformation describe-stack-resources --stack-name ${item}-cicd --profile singledigit`).stdout).StackResources
-        console.log('Stack', d);
-        let c = d.filter(i => {
-            return i.ResourceType === 'AWS::S3::BUCKET' 
+        let StackResources = JSON.parse(shell.exec(`aws cloudformation describe-stack-resources --stack-name ${item}-cicd --profile singledigit`).stdout).StackResources
+        
+        let stackResourceBuckets = StackResources.filter(i => {
+            return i.ResourceType === 'AWS::S3::Bucket' 
         })
 
-        d.forEach(bucket => {
-            // empty bucket
-            console.log(`Deleting items from s3://${bucket}`)
-            //shell.exec(`aws s3 rm --recursive s3://${bucket}`);
-            // delete bucket
-            console.log(`Deleteing bucket ${bucket}`)
-            //shell.exec(`aws s3api delete-bucket --bucket ${bucket}`)
+        // delete buckets
+        stackResourceBuckets.forEach(bucket => {
+            shell.exec(`aws s3 rb s3://${bucket.PhysicalResourceId} --force`)
         })
-        //shell.exec(`aws cloudformation delete-stack --stack-name ${item}-cicd`)
+        // delete stack
+        shell.exec(`aws cloudformation delete-stack --stack-name ${item}-cicd`)
     })
 }
 
-//deleteOld();
+deleteOld();
 installNew();
