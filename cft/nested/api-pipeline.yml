@@ -115,6 +115,6 @@ Resources:
         EnvironmentVariables:
           - Name: SERVICE
             Value: !Ref Service
-          - Name: BUCKET
-            Value: !Ref PackageArtifactsBucket
+          - Name: ENVIRONMENT
+            Value: !Ref Environment
       ServiceRole: !ImportValue BuildRoleArn

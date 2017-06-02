@@ -1,102 +1,103 @@
 #!/usr/bin/env node
 
-const shell = require('shelljs');
+const client = require('./client');
 const fs = require('fs');
 const _ = require('lodash');
-let stacks, services, deployedServices, toBeDeployed, toBeUpdated, toBeDeleted;
+let stacks, localServices, deployedStacks, deployedServices, toBeDeployed, toBeUpdated, toBeDeleted;
 
-// get stacks
-let stackCommand = shell.exec(`aws cloudformation list-stacks`, { silent: true })
-
-if (stackCommand.code !== 0) {
-    shell.echo('Could not get current stacks from AWS')
-    shell.exit(1);
-} else {
-    stacks = JSON.parse(stackCommand.stdout).StackSummaries;
+const createParams = (service) => {
+    return {
+        StackName: `${service}-cicd`,
+        Capabilities: ['CAPABILITY_NAMED_IAM'],
+        Parameters: [
+            {
+                ParameterKey: 'Service',
+                ParameterValue: service
+            },
+            {
+                ParameterKey: 'Environment',
+                ParameterValue: process.env.ENVIRONMENT
+            },
+            {
+                ParameterKey: 'GitHubOwner',
+                ParameterValue: process.env.GITHUB_OWNER
+            },
+            {
+                ParameterKey: 'GitHubToken',
+                ParameterValue: process.env.GITHUB_TOKEN
+            },
+            {
+                ParameterKey: 'Repo',
+                ParameterValue: process.env.REPO
+            },
+            {
+                ParameterKey: 'Branch',
+                ParameterValue: process.env.BRANCH
+            }
+        ],
+        TemplateURL: `https://s3.amazonaws.com/${process.env.CFT_BUCKET}/nested/api-pipeline.yml`
+    };
 }
 
 // get local service names
-services = fs.readdirSync('./').filter(item => {
+localServices = fs.readdirSync('./').filter(item => {
     return item.indexOf('-service') > -1
 });
 
-// get deployed services
-deployedServices = stacks.filter(item => {
-    return _.endsWith(item.StackName, '-cicd') && (item.StackStatus === 'CREATE_COMPLETE' || item.StackStatus === 'UPDATE_COMPLETE')
-})
-
-toBeDeployed = _.difference(services, deployedServices.map(item => { return _.trimEnd(item.StackName, '-cicd') }));
-
-toBeUpdated = _.intersection(services, deployedServices.map(item => { return _.trimEnd(item.StackName, '-cicd') }));
-
-toBeDeleted = _.difference(deployedServices.map(item => { return _.trimEnd(item.StackName, '-cicd') }), services);
-
-const callStack = (service, action) => {
-    return new Promise((resolve, reject) => {
-        let stackCommand = shell.exec(
-            `aws cloudformation ${action}-stack --stack-name ${service}-cicd \
-            --template-url https://s3.amazonaws.com/${process.env.CFT_BUCKET}/nested/api-pipeline.yml \
-            --capabilities CAPABILITY_NAMED_IAM \
-            --parameters ParameterKey=GitHubOwner,ParameterValue=${process.env.GITHUB_OWNER} \
-            ParameterKey=Environment,ParameterValue=${process.env.ENVIRONMENT} \
-            ParameterKey=Repo,ParameterValue=${process.env.REPO} \
-            ParameterKey=Branch,ParameterValue=${process.env.BRANCH} \
-            ParameterKey=GitHubToken,ParameterValue=${process.env.GITHUB_TOKEN} \
-            ParameterKey=Service,ParameterValue=${service}`
-        )
-
-        if (stackCommand.code !== 0) reject(stackCommand.stderr);
-        else resolve(stackCommand.stdout);
-    })
+// get stacks
+let params = {
+    StackStatusFilter: ['CREATE_COMPLETE', 'UPDATE_COMPLETE']
 }
 
-const updateAll = () => {
-    toBeUpdated.forEach(item => {
-        shell.echo(`Updating ${item}-cicd`);
-        callStack(item, 'update')
-            .then(response => {
-                shell.echo(`${item}-cicd is being updated`);
-            })
-            .catch(error => {
-                shell.echo(`Could not update ${item}-cicd`);
-            })
-    })
-}
+client.listStacks(params)
+    .then(response => {
+        stacks = response.StackSummaries
 
-const installNew = () => {
-    if(toBeDeployed.length === 0 && process.argv[2] !== '--update') shell.echo(`There are no new services to deploy. Add '--update' to update current pipelines`);
-    toBeDeployed.forEach(item => {
-        shell.echo(`Deploying ${item}-cicd`);
-        callStack(item, 'create')
-            .then(response => {
-                shell.echo(`${item}-cicd is being created`);
-            })
-            .catch(error => {
-                shell.echo(`Could not create ${item}-cicd`);
-            })
-    });
-    if (process.argv[2] === '--update') updateAll();
-}
+        // deployed services
+        deployedStacks = stacks.filter(stack => { return _.endsWith(stack.StackName, '-cicd') });
 
-const deleteOld = () => {
-    toBeDeleted.forEach(item => {
-        console.log(`Managing stack ${item}`)
-        shell.echo(`Deleteing ${item}-cicd`);
+        deployedServices = deployedStacks.map(stack => { return _.trimEnd(stack.StackName, '-cicd') })
+        console.log("Deployed Services", deployedServices.sort());
 
-        let StackResources = JSON.parse(shell.exec(`aws cloudformation describe-stack-resources --stack-name ${item}-cicd`).stdout).StackResources
-        
-        let stackResourceBuckets = StackResources.filter(i => {
-            return i.ResourceType === 'AWS::S3::Bucket' 
+        toBeDeployed = _.difference(localServices, deployedServices);
+        console.log(`${toBeDeployed.length} Service(s) to be deployed`, toBeDeployed);
+
+        toBeUpdated = _.intersection(localServices, deployedServices);
+        console.log(`Checking ${toBeUpdated.length} Service(s) for updates`, toBeUpdated);
+
+        toBeDeleted = _.difference(deployedServices, localServices);
+        console.log(`${toBeDeleted.length} Service(s) to be deleted`, toBeDeleted);
+
+        let calls = []
+
+        toBeDeployed.forEach(service => {
+            calls.push(client.createStack(createParams(service)));
         })
 
-        // delete buckets
-        stackResourceBuckets.forEach(bucket => {
-            shell.exec(`aws s3 rb s3://${bucket.PhysicalResourceId} --force`)
+        toBeDeleted.forEach(service => {
+            calls.push()
         })
-        // delete stack
-        shell.exec(`aws cloudformation delete-stack --stack-name ${item}-cicd`)
-    })
-}
 
-deleteOld();
-installNew();
+        return Promise.all(calls)
+    })
+    .then(responses => {
+        responses.forEach(response => {
+            console.log("Building Stack", response.StackId);
+        })
+
+        let calls = [];
+
+        toBeUpdated.forEach(service => {
+            calls.push(client.updateStack(createParams(service)));
+        })
+
+        return Promise.all(calls)
+    })
+    .then(responses => {
+        responses.forEach(response => {
+            console.log(response.message);
+        })
+    })
+    .catch(error => {
+        console.log(error.message);
+    })
