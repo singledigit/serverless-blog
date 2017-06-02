@@ -5,7 +5,7 @@ phases:
     commands:
       - npm install
       - chmod 777 ./bin/*
-      - ./bin/build.js
+      - ./bin/install.js
   pre_build:
     commands:
   build:
