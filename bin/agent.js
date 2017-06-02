@@ -74,10 +74,6 @@ client.listStacks(params)
             calls.push(client.createStack(createParams(service)));
         })
 
-        toBeDeleted.forEach(service => {
-            calls.push()
-        })
-
         return Promise.all(calls)
     })
     .then(responses => {
@@ -92,6 +88,19 @@ client.listStacks(params)
         })
 
         return Promise.all(calls)
+    })
+    .then(responses => {
+        responses.forEach(response => {
+            console.log(response.message);
+        })
+
+        let calls = [];
+
+        toBeDeleted.forEach(service => {
+            calls.push(client.deleteStack(service));
+        })
+
+        return new Promise.all(calls)
     })
     .then(responses => {
         responses.forEach(response => {
