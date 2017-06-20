@@ -6,8 +6,6 @@ const fs = require('fs');
 const _ = require('lodash');
 let stacks, localServices, deployedStacks, deployedServices, toBeDeployed, toBeUpdated, toBeDeleted, tokens;
 
-console.log(process.env);
-
 const createParams = (service) => {
     return {
         StackName: `${service}-cicd`,
