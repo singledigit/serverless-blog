@@ -1,8 +1,10 @@
+//@ts-check
 const AWS = require('aws-sdk');
 AWS.config.update({ region: 'us-east-1' });
 const cf = new AWS.CloudFormation();
 const s3 = new AWS.S3();
 const cp = new AWS.CodePipeline();
+const ssm = new AWS.SSM();
 
 const getPipelineState = (params) => {
     return new Promise((resolve, reject) => {
@@ -93,8 +95,18 @@ const describeStackResources = (params) => {
     })
 }
 
+const getParameters = (params) => {
+    return new Promise((resolve, reject) => {
+        ssm.getParameters(params, (err, data) => {
+            if (err) reject(err);
+            else resolve(data);
+        });
+    })
+}
+
 exports.getPipelineState = getPipelineState;
 exports.listStacks = listStacks;
 exports.createStack = createStack;
 exports.updateStack = updateStack;
 exports.deleteStack = deleteStack;
+exports.getParameters = getParameters;

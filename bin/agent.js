@@ -1,9 +1,12 @@
 #!/usr/bin/env node
-
+//@ts-check
+require('dotenv').config();
 const client = require('./client');
 const fs = require('fs');
 const _ = require('lodash');
-let stacks, localServices, deployedStacks, deployedServices, toBeDeployed, toBeUpdated, toBeDeleted;
+let stacks, localServices, deployedStacks, deployedServices, toBeDeployed, toBeUpdated, toBeDeleted, tokens;
+
+console.log(process.env);
 
 const createParams = (service) => {
     return {
@@ -15,16 +18,12 @@ const createParams = (service) => {
                 ParameterValue: service
             },
             {
-                ParameterKey: 'Environment',
-                ParameterValue: process.env.ENVIRONMENT
-            },
-            {
                 ParameterKey: 'GitHubOwner',
                 ParameterValue: process.env.GITHUB_OWNER
             },
             {
                 ParameterKey: 'GitHubToken',
-                ParameterValue: process.env.GITHUB_TOKEN
+                ParameterValue: tokens.Parameters[0].Value
             },
             {
                 ParameterKey: 'Repo',
@@ -44,12 +43,24 @@ localServices = fs.readdirSync('./').filter(item => {
     return item.indexOf('-service') > -1
 });
 
-// get stacks
-let params = {
-    StackStatusFilter: ['CREATE_COMPLETE', 'UPDATE_COMPLETE']
+console.log("Local Services", localServices);
+
+// get token from param store
+let tokenParams = {
+    Names: ['GITHUB_TOKEN'],
+    WithDecryption: true
 }
 
-client.listStacks(params)
+client.getParameters(tokenParams)
+    .then(response => {
+        tokens = response;
+
+        // get deployed stacks
+        let cfParams = {
+            StackStatusFilter: ['CREATE_COMPLETE', 'UPDATE_COMPLETE']
+        }
+        return client.listStacks(cfParams)
+    })
     .then(response => {
         stacks = response.StackSummaries
 
@@ -78,9 +89,19 @@ client.listStacks(params)
     })
     .then(responses => {
         responses.forEach(response => {
-            console.log("Building Stack", response.StackId);
+            console.log("Deploying Stack: ", response.StackId);
         })
 
+        let calls = [];
+
+        toBeDeleted.forEach(service => {
+            console.log(`Deleteing service ${service}`);
+            calls.push(client.deleteStack(service));
+        })
+
+        return Promise.all(calls)
+    })
+    .then(responses => {
         let calls = [];
 
         toBeUpdated.forEach(service => {
@@ -91,20 +112,7 @@ client.listStacks(params)
     })
     .then(responses => {
         responses.forEach(response => {
-            console.log(response.message);
-        })
-
-        let calls = [];
-
-        toBeDeleted.forEach(service => {
-            calls.push(client.deleteStack(service));
-        })
-
-        return new Promise.all(calls)
-    })
-    .then(responses => {
-        responses.forEach(response => {
-            console.log(response.message);
+            console.log("Updating Stack: ", response.StackId);
         })
     })
     .catch(error => {
