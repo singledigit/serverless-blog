@@ -8,7 +8,10 @@ phases:
       - ./bin/install.js
   pre_build:
     commands:
+      - echo "Pre Build Running"
   build:
     commands:
+      - echo "Build Running"
   post_build:
     commands:
+      - echo "Post Build Running"

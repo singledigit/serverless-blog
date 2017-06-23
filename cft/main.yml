@@ -5,16 +5,9 @@ Parameters:
   CFTBucket:
     Type: String
     Description: S3 bucket containing CFT files
-  Environment:
-    Type: String
-    Description: Environment to build for
-    Default: dev
   GitHubOwner:
     Type: String
     Description: GitHub Owner Name
-  GitHubToken:
-    Type: String
-    Description: GitHub Token
   Repo:
     Type: String
     Description: GitHub Repo
@@ -36,19 +29,17 @@ Resources:
         - {bucket: !Ref CFTBucket}
 
   ## Service CICD Agent Pipeline
-  ServiceAgentPipeline:
-    Type: "AWS::CloudFormation::Stack"
-    Properties:
-      Parameters:
-        CFTBucket: !Ref CFTBucket
-        Environment: !Ref Environment
-        GitHubOwner: !Ref GitHubOwner
-        GitHubToken: !Ref GitHubToken
-        Repo: !Ref Repo
-        Branch: !Ref Branch
-      TemplateURL: !Sub
-        - https://s3.amazonaws.com/${bucket}/nested/agent-pipeline.yml
-        - {bucket: !Ref CFTBucket}
+  # ServiceAgentPipeline:
+  #   Type: "AWS::CloudFormation::Stack"
+  #   Properties:
+  #     Parameters:
+  #       CFTBucket: !Ref CFTBucket
+  #       GitHubOwner: !Ref GitHubOwner
+  #       Repo: !Ref Repo
+  #       Branch: !Ref Branch
+  #     TemplateURL: !Sub
+  #       - https://s3.amazonaws.com/${bucket}/nested/agent-pipeline.yml
+  #       - {bucket: !Ref CFTBucket}
 
 Outputs:
   SNSTopicArn:

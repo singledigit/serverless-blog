@@ -1,14 +1,9 @@
 #!/usr/bin/env node
 const shell = require('shelljs');
 
-// If Agent Service then run Agent and exit
-if(process.env.SERVICE === "agent-service"){
-    // need to run CICD Service Agent
-    let agentCommand = shell.exec(`./bin/agent.js`);
+let command = shell.exec('foo');
 
-    if(agentCommand.code !== 0){
-        shell.echo('AGENT_ERROR Problem building CICD Services');
-        shell.exit(1)
-    }
-    shell.exit(0);
+if (command.code !== 0) {
+    shell.echo('INSTALL_ERROR: Error installing stuff');
+    shell.exit(command.code);
 }

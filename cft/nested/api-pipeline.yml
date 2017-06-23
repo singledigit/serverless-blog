@@ -5,10 +5,6 @@ Parameters:
   Service:
     Type: String
     Description: Name of service
-  Environment:
-    Type: String
-    Description: Environment to build for
-    Default: dev
   GitHubOwner:
     Type: String
     Description: GitHub Owner Name
@@ -115,6 +111,4 @@ Resources:
         EnvironmentVariables:
           - Name: SERVICE
             Value: !Ref Service
-          - Name: ENVIRONMENT
-            Value: !Ref Environment
       ServiceRole: !ImportValue BuildRoleArn

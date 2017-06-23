@@ -5,10 +5,6 @@ Parameters:
   CFTBucket:
     Type: String
     Description: S3 bucket containing CFT files
-  Environment:
-    Type: String
-    Description: Environment to build for
-    Default: dev
   GitHubOwner:
     Type: String
     Description: GitHub Owner Name
@@ -85,13 +81,9 @@ Resources:
               Value: agent-service
             - Name: CFT_BUCKET
               Value: !Ref CFTBucket
-            - Name: ENVIRONMENT
-              Value: !Ref Environment
             - Name: GITHUB_OWNER
               Value: !Ref GitHubOwner
             - Name: REPO
               Value: !Ref Repo
             - Name: BRANCH
               Value: !Ref Branch
-            - Name: GITHUB_TOKEN
-              Value: !Ref GitHubToken
