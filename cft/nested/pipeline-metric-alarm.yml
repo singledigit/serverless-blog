@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Metric Alarm
+
+Parameters:
+  Pattern:
+    Type: String
+    Description: Pattern to be used to filter metrics
+  LogGroup:
+    Type: String
+    Description: Log Group to apply filter
+
+Resources:
+  InstallErrorMetricFilter:
+      Type: "AWS::Logs::MetricFilter"
+      Properties: 
+        FilterPattern: !Ref Pattern
+        LogGroupName: !Sub /aws/codebuild/${LogGroup}
+        MetricTransformations:
+          - MetricName: !Ref Pattern
+            MetricNamespace: PIPELINE_ERRORS
+            MetricValue: "1"
+    
+  InstallErrorAlert:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      AlarmName: !Sub ${Pattern}-${LogGroup}
+      AlarmActions:
+        - !ImportValue NotificationTopicArn
+      ComparisonOperator: GreaterThanThreshold
+      EvaluationPeriods: 1
+      MetricName: !Ref Pattern
+      Namespace: PIPELINE_ERRORS
+      Period: 300
+      Statistic: Sum
+      Threshold: 0

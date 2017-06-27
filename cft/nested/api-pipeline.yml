@@ -17,6 +17,9 @@ Parameters:
   Branch:
     Type: String
     Description: GitHub Branch
+  CFTBucket:
+    Type: String
+    Description: Template bucket
 
 Resources:
   BuildArtifactsBucket:
@@ -98,7 +101,7 @@ Resources:
   BuildProject:
     Type: "AWS::CodeBuild::Project"
     Properties:
-      Name: !Sub ${Service}-Build-Project
+      Name: !Sub ${Service}-build-project
       Description: !Sub Build project for ${Service}
       Source:
         Type: CODEPIPELINE

@@ -30,6 +30,10 @@ const createParams = (service) => {
             {
                 ParameterKey: 'Branch',
                 ParameterValue: process.env.BRANCH
+            },
+            {
+                ParameterKey: 'CFTBucket',
+                ParameterValue: process.env.CFT_BUCKET
             }
         ],
         TemplateURL: `https://s3.amazonaws.com/${process.env.CFT_BUCKET}/nested/api-pipeline.yml`

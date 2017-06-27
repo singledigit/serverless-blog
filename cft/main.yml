@@ -28,18 +28,13 @@ Resources:
         - https://s3.amazonaws.com/${bucket}/nested/build-role.yml
         - {bucket: !Ref CFTBucket}
 
-  ## Service CICD Agent Pipeline
-  # ServiceAgentPipeline:
-  #   Type: "AWS::CloudFormation::Stack"
-  #   Properties:
-  #     Parameters:
-  #       CFTBucket: !Ref CFTBucket
-  #       GitHubOwner: !Ref GitHubOwner
-  #       Repo: !Ref Repo
-  #       Branch: !Ref Branch
-  #     TemplateURL: !Sub
-  #       - https://s3.amazonaws.com/${bucket}/nested/agent-pipeline.yml
-  #       - {bucket: !Ref CFTBucket}
+  PipelineFailedEventAlert:
+    Type: "AWS::Events::Rule"
+    Properties: 
+      EventPattern: {"source": ["aws.codebuild"],"detail": {"completed-phase-status": ["FAILED"]}}
+      Targets:
+        - Arn: !Ref NotificationSNS
+          Id: My-Rule-Target
 
 Outputs:
   SNSTopicArn:
