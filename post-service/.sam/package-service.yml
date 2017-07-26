@@ -3,7 +3,7 @@ Description: Post Service
 Resources:
   PostServiceCreate:
     Properties:
-      CodeUri: s3://ej-dev/iamsam/1e54529b1ea74761486a7793a8a2bb10
+      CodeUri: s3://ej-blog-cft/iamsam/b6cb78d5146dec3fc6c75fda8f96ecf2
       Environment:
         Variables:
           POSTS_TABLE:

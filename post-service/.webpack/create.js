@@ -17174,29 +17174,37 @@ module.exports = require("aws-sdk");
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+//@ts-check
+
 var _ = __webpack_require__(0);
 var AWS = __webpack_require__(1);
 var dynamodb = new AWS.DynamoDB();
 var table = new AWS.DynamoDB.DocumentClient({ service: dynamodb });
 
 var handler = exports.handler = function handler(event, context, callback) {
-    var params = {
-        TableName: process.env.POSTS_TABLE,
-        Item: {
-            "id": "12345",
-            "category": "family",
-            "body": "Tis is my post content"
-        },
-        ConditionExpression: 'attribute_not_exists(id)'
-    };
+    if (event.name === "Eric") {
+        return callback(null, { valid: true });
+    }
+    callback(new Error('fail'));
 
-    table.put(params, function (err, data) {
-        if (err) {
-            callback(err);
-        } else {
-            callback(null, { message: "It Worked", data: data });
-        }
-    });
+    // let params = {
+    //     TableName: process.env.POSTS_TABLE,
+    //     Item: {
+    //         "id": "12345",
+    //         "category": "family",
+    //         "body": "Tis is my post content",
+    //     },
+    //     //ConditionExpression: 'attribute_not_exists(id)'
+    // }
+
+    // table.put(params, (err, data) => {
+    //     if (err) {
+    //         callback(err);
+    //     }
+    //     else {
+    //         callback(null, { message: "It Worked", data: data });
+    //     }
+    // })
 };
 
 /***/ }),

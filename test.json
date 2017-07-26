@@ -1,0 +1,43 @@
+{
+    "version": "0",
+    "id": "5196622b-a4c7-4960-87a9-c88245d3c329",
+    "detail-type": "AWS API Call via CloudTrail",
+    "source": "aws.codepipeline",
+    "account": "700336187521",
+    "time": "2017-06-27T22:31:05Z",
+    "region": "us-east-1",
+    "resources": [],
+    "detail": {
+        "eventVersion": "1.05",
+        "userIdentity": {
+            "type": "IAMUser",
+            "principalId": "AIDAJS5ZRLSC6MEDJPWBQ",
+            "arn": "arn:aws:iam::700336187521:user/ejohnson",
+            "accountId": "700336187521",
+            "accessKeyId": "ASIAJTYVX533NEBX5QOA",
+            "userName": "ejohnson",
+            "sessionContext": {
+                "attributes": {
+                    "mfaAuthenticated": "false",
+                    "creationDate": "2017-06-27T22:28:19Z"
+                }
+            },
+            "invokedBy": "signin.amazonaws.com"
+        },
+        "eventTime": "2017-06-27T22:31:05Z",
+        "eventSource": "codepipeline.amazonaws.com",
+        "eventName": "StartPipelineExecution",
+        "awsRegion": "us-east-1",
+        "sourceIPAddress": "67.217.9.238",
+        "userAgent": "signin.amazonaws.com",
+        "requestParameters": {
+            "name": "post-service-cicd-BuildPipeLine-1JJVSUUXZBU4W"
+        },
+        "responseElements": {
+            "pipelineExecutionId": "9795d1e8-f783-4b8d-a0b5-8b17e89da69c"
+        },
+        "requestID": "4e8f8d45-5b88-11!e7-b081-7bec65d2836b",
+        "eventID": "90f5ab0a-459e-40d3-8fce-2deb5a0c1a8f",
+        "eventType": "AwsApiCall"
+    }
+}

@@ -28,13 +28,24 @@ Resources:
         - https://s3.amazonaws.com/${bucket}/nested/build-role.yml
         - {bucket: !Ref CFTBucket}
 
+  PipelineStarted:
+    Type: "AWS::Events::Rule"
+    Properties: 
+      EventPattern: {"source": ["aws.codepipeline"],"detail-type": ["AWS API Call via CloudTrail"],"detail": {"eventSource": ["codepipeline.amazonaws.com"]}}
+      Targets:
+        - Arn: !Ref NotificationSNS
+          Id: Pipeline-Start
+          InputTransformer:
+            InputPathsMap: {"pipeline":"$.detail.requestParameters.name","user":"$.detail.userIdentity.userName"}
+            InputTemplate: "The Pipeline, <pipeline> was kicked off by <user>."
+
   PipelineFailedEventAlert:
     Type: "AWS::Events::Rule"
     Properties: 
-      EventPattern: {"source": ["aws.codebuild"],"detail": {"completed-phase-status": ["FAILED"]}}
+      EventPattern: {"source": ["aws.codepipeline"]}
       Targets:
         - Arn: !Ref NotificationSNS
-          Id: My-Rule-Target
+          Id: Codebuild-Error
 
 Outputs:
   SNSTopicArn:
