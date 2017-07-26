@@ -19,5 +19,5 @@ phases:
       - echo "Post Build Running"
 artifacts:
   files:
-    - $SERVICE/.sam/service-packaged.yml
+    - .sam/service-packaged.yml
   discard-paths: yes
