@@ -12,8 +12,8 @@ Resources:
       Handler: create.handler
       Runtime: nodejs6.10
       CodeUri: ./.webpack
-      Events:
-        Type: Api
-        Properties:
-          Path: /photos
-          Method: post
+    Events:
+      Type: Api
+      Properties:
+        Path: /photos
+        Method: post
