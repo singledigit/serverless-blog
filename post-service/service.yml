@@ -13,7 +13,7 @@ Resources:
       Runtime: nodejs6.10
       CodeUri: ./.webpack
       Events:
-        ReadAPIResource:
+        GETResource:
           Type: Api
           Properties:
             Path: /
