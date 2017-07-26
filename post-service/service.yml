@@ -3,23 +3,6 @@ Transform: AWS::Serverless-2016-10-31
 Description: Post Service
 Resources:
 
-  PostsTable:
-    Type: "AWS::DynamoDB::Table"
-    Properties:
-      AttributeDefinitions:
-        - AttributeName: id
-          AttributeType: S
-        - AttributeName: category
-          AttributeType: S
-      KeySchema:
-        - AttributeName: id
-          KeyType: HASH
-        - AttributeName: category
-          KeyType: RANGE
-      ProvisionedThroughput:
-        ReadCapacityUnits: 2
-        WriteCapacityUnits: 2
-
   PostServiceCreate:
     Type: AWS::Serverless::Function
     Properties:
@@ -29,6 +12,8 @@ Resources:
       Handler: create.handler
       Runtime: nodejs6.10
       CodeUri: ./.webpack
-      Environment:
-        Variables:
-          POSTS_TABLE: !Ref PostsTable
+      Event:
+        Type: Api
+        Properties:
+          Path: /photos
+          Method: post
