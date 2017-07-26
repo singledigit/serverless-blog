@@ -23,5 +23,5 @@ phases:
       - ls -lga
 artifacts:
   files:
-    - $SERVICE/.sam/service-packaged.yml
+    - post-service/.sam/service-packaged.yml
   discard-paths: yes
