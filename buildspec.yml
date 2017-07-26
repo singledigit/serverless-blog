@@ -15,10 +15,12 @@ phases:
       - webpack
   post_build:
     commands:
-      - echo "Current Directory Listing"
-      - ls
-      - aws cloudformation package --template-file ./service.yml --output-template-file ./.sam/service-packaged.yml --s3-bucket ej-asia-demo
       - echo "Post Build Running"
+      - echo "Current Directory Listing"
+      - ls -lga
+      - aws cloudformation package --template-file ./service.yml --output-template-file ./.sam/service-packaged.yml --s3-bucket ej-asia-demo
+      - "Echo After Package Listing"
+      - ls -lga
 artifacts:
   files:
     - $SERVICE/.sam/service-packaged.yml
