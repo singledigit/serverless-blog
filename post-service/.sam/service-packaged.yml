@@ -3,14 +3,13 @@ Description: Post Service
 Resources:
   PostServiceCreate:
     Properties:
-      CodeUri: s3://singledigit-dev-uploads/ad676abd2c4641ad5d70bd1e11462138
+      CodeUri: s3://ej-asia-demo/9bd3c9fb892c6b10268078c7348bb4c5
       Environment:
-        PostsTable:
-          Fn::GetAtt:
-          - PostsTable
-          - Name
+        Variables:
+          POSTS_TABLE:
+            Ref: PostsTable
       FunctionName: post-service-create
-      Handler: index.create
+      Handler: create.handler
       Policies:
       - AWSLambdaFullAccess
       Runtime: nodejs6.10
@@ -27,10 +26,8 @@ Resources:
         KeyType: HASH
       - AttributeName: category
         KeyType: RANGE
-      LocalSecondaryIndexes:
-      - LocalSecondaryIndexes
       ProvisionedThroughput:
-      - ReadCapacityUnits: 2
+        ReadCapacityUnits: 2
         WriteCapacityUnits: 2
     Type: AWS::DynamoDB::Table
 Transform: AWS::Serverless-2016-10-31

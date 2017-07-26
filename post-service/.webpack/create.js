@@ -33,9 +33,6 @@
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
 /******/
-/******/ 	// identity function for calling harmony imports with the correct context
-/******/ 	__webpack_require__.i = function(value) { return value; };
-/******/
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
@@ -63,11 +60,54 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+//@ts-check
+
+var _ = __webpack_require__(1);
+var AWS = __webpack_require__(3);
+var dynamodb = new AWS.DynamoDB();
+var table = new AWS.DynamoDB.DocumentClient({ service: dynamodb });
+
+var handler = exports.handler = function handler(event, context, callback) {
+    if (event.name === "Eric") {
+        return callback(null, { valid: true });
+    }
+    callback(new Error('fail'));
+
+    // let params = {
+    //     TableName: process.env.POSTS_TABLE,
+    //     Item: {
+    //         "id": "12345",
+    //         "category": "family",
+    //         "body": "Tis is my post content",
+    //     },
+    //     //ConditionExpression: 'attribute_not_exists(id)'
+    // }
+
+    // table.put(params, (err, data) => {
+    //     if (err) {
+    //         callback(err);
+    //     }
+    //     else {
+    //         callback(null, { message: "It Worked", data: data });
+    //     }
+    // })
+};
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -17156,59 +17196,10 @@
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)(module)))
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
-module.exports = require("aws-sdk");
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)(module)))
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-//@ts-check
-
-var _ = __webpack_require__(0);
-var AWS = __webpack_require__(1);
-var dynamodb = new AWS.DynamoDB();
-var table = new AWS.DynamoDB.DocumentClient({ service: dynamodb });
-
-var handler = exports.handler = function handler(event, context, callback) {
-    if (event.name === "Eric") {
-        return callback(null, { valid: true });
-    }
-    callback(new Error('fail'));
-
-    // let params = {
-    //     TableName: process.env.POSTS_TABLE,
-    //     Item: {
-    //         "id": "12345",
-    //         "category": "family",
-    //         "body": "Tis is my post content",
-    //     },
-    //     //ConditionExpression: 'attribute_not_exists(id)'
-    // }
-
-    // table.put(params, (err, data) => {
-    //     if (err) {
-    //         callback(err);
-    //     }
-    //     else {
-    //         callback(null, { message: "It Worked", data: data });
-    //     }
-    // })
-};
-
-/***/ }),
-/* 3 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -17234,6 +17225,12 @@ module.exports = function(module) {
 	return module;
 };
 
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+module.exports = require("aws-sdk");
 
 /***/ })
 /******/ ])));

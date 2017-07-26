@@ -5,15 +5,6 @@ Parameters:
   CFTBucket:
     Type: String
     Description: S3 bucket containing CFT files
-  GitHubOwner:
-    Type: String
-    Description: GitHub Owner Name
-  Repo:
-    Type: String
-    Description: GitHub Repo
-  Branch:
-    Type: String
-    Description: GitHub Branch
 
 Resources:
   ## Generic Notification Topic
@@ -28,24 +19,21 @@ Resources:
         - https://s3.amazonaws.com/${bucket}/nested/build-role.yml
         - {bucket: !Ref CFTBucket}
 
-  PipelineStarted:
-    Type: "AWS::Events::Rule"
-    Properties: 
-      EventPattern: {"source": ["aws.codepipeline"],"detail-type": ["AWS API Call via CloudTrail"],"detail": {"eventSource": ["codepipeline.amazonaws.com"]}}
-      Targets:
-        - Arn: !Ref NotificationSNS
-          Id: Pipeline-Start
-          InputTransformer:
-            InputPathsMap: {"pipeline":"$.detail.requestParameters.name","user":"$.detail.userIdentity.userName"}
-            InputTemplate: "The Pipeline, <pipeline> was kicked off by <user>."
+  # PipelineStarted:
+  #   Type: "AWS::Events::Rule"
+  #   Properties: 
+  #     EventPattern: {"source": ["aws.codepipeline"],"detail-type": ["AWS API Call via CloudTrail"],"detail": {"eventSource": ["codepipeline.amazonaws.com"]}}
+  #     Targets:
+  #       - Arn: !Ref NotificationSNS
+  #         Id: Pipeline-Start
 
-  PipelineFailedEventAlert:
-    Type: "AWS::Events::Rule"
-    Properties: 
-      EventPattern: {"source": ["aws.codepipeline"]}
-      Targets:
-        - Arn: !Ref NotificationSNS
-          Id: Codebuild-Error
+  # PipelineFailedEventAlert:
+  #   Type: "AWS::Events::Rule"
+  #   Properties: 
+  #     EventPattern: {"source": ["aws.codepipeline"]}
+  #     Targets:
+  #       - Arn: !Ref NotificationSNS
+  #         Id: Codebuild-Error
 
 Outputs:
   SNSTopicArn:

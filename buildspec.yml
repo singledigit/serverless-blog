@@ -4,14 +4,19 @@ phases:
   install:
     commands:
       - npm install
-      - chmod 777 ./bin/*
-      - ./bin/install.js
   pre_build:
     commands:
       - echo "Pre Build Running"
   build:
     commands:
       - echo "Build Running"
+      - cd ./$SERVICE
+      - webpack
   post_build:
     commands:
+      - cloudformation package --template-file ./service.yml --output-template-file ./.sam/service-packaged.yml --s3-bucket ej-asia-demo
       - echo "Post Build Running"
+artifacts:
+  files:
+    - $SERVICE/.sam/service-packaged.yml
+  discard-paths: yes
