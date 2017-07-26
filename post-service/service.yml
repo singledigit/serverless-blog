@@ -3,17 +3,18 @@ Transform: AWS::Serverless-2016-10-31
 Description: Post Service
 Resources:
 
-  PostServiceCreate:
+  PostServiceRead:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: post-service-create
+      FunctionName: post-service-read
       Policies: 
         - AWSLambdaFullAccess
-      Handler: create.handler
+      Handler: read.handler
       Runtime: nodejs6.10
       CodeUri: ./.webpack
-    Events:
-      Type: Api
-      Properties:
-        Path: /
-        Method: post
+      Events:
+        ReadAPIResource:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get

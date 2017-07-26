@@ -3,7 +3,7 @@ let webpack = require('webpack');
 
 module.exports = {
     entry: {
-        create: './create.js'
+        read: './read.js'
     },
     output: {
         libraryTarget: 'commonjs',
