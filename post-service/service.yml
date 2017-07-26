@@ -15,5 +15,5 @@ Resources:
     Events:
       Type: Api
       Properties:
-        Path: /photos
+        Path: /
         Method: post
