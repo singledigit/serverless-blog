@@ -12,7 +12,7 @@ Resources:
       Handler: create.handler
       Runtime: nodejs6.10
       CodeUri: ./.webpack
-      Event:
+      Events:
         Type: Api
         Properties:
           Path: /photos
