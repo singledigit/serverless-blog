@@ -7,9 +7,8 @@ const table = new AWS.DynamoDB.DocumentClient({ service: dynamodb });
 
 export const handler = (event, context, callback) => {
 
-    let responseBody = {
-        message: "My Lambda Worked",
-        input: event
+    const responseBody = {
+        message: "My Lambda Worked"
     };
 
     let response = {
