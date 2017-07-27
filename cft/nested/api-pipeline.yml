@@ -84,7 +84,7 @@ Resources:
                 Capabilities: CAPABILITY_IAM
                 RoleArn: !ImportValue BuildRoleArn
                 StackName: !Ref Service
-                TemplatePath: BuiltOutput::service-packaged.yml
+                TemplatePath: BuiltOutput::package-service.yml
               RunOrder: 1
             - Name: ExecuteChangeset
               ActionTypeId:
