@@ -19,5 +19,5 @@ phases:
       - aws cloudformation package --template-file ./service.yml --output-template-file ./.sam/package-service.yml --s3-bucket ej-asia-demo
 artifacts:
   files:
-    - post-service/.sam/package-service.yml
+    - $SERVICE/.sam/*
   discard-paths: yes
