@@ -16,8 +16,8 @@ phases:
   post_build:
     commands:
       - echo "Post Build Running"
-      - aws cloudformation package --template-file ./service.yml --output-template-file ./.sam/service-packaged.yml --s3-bucket ej-asia-demo
+      - aws cloudformation package --template-file ./service.yml --output-template-file ./.sam/package-service.yml --s3-bucket ej-asia-demo
 artifacts:
   files:
-    - post-service/.sam/service-packaged.yml
+    - post-service/.sam/package-service.yml
   discard-paths: yes

@@ -81,7 +81,17 @@ var dynamodb = new AWS.DynamoDB();
 var table = new AWS.DynamoDB.DocumentClient({ service: dynamodb });
 
 var handler = exports.handler = function handler(event, context, callback) {
-    callback(null, { message: "My Lambda Worked" });
+
+    var responseBody = {
+        message: "My Lambda Worked"
+    };
+
+    var response = {
+        statusCode: 200,
+        body: JSON.stringify(responseBody)
+    };
+
+    callback(null, response);
 };
 
 /***/ }),
