@@ -16,6 +16,7 @@ phases:
   post_build:
     commands:
       - echo "Post Build Running"
+      - mkdir .sam
       - aws cloudformation package --template-file ./service.yml --output-template-file ./.sam/package-service.yml --s3-bucket ej-asia-demo
 artifacts:
   files:
