@@ -10,6 +10,14 @@ Resources:
   ## Generic Notification Topic
   NotificationSNS:
     Type: "AWS::SNS::Topic"
+
+  ## My Subscription
+  EJSubscription:
+    Type: "AWS::SNS::Subscription"
+    Properties:
+      Endpoint: me@singledigit.net
+      Protocol: email
+      TopicArn: !Ref NotificationSNS
   
   ## Generic Build Role
   BuildRole:
@@ -19,22 +27,25 @@ Resources:
         - https://s3.amazonaws.com/${bucket}/nested/build-role.yml
         - {bucket: !Ref CFTBucket}
 
-  # PipelineStarted:
+  ## Event Rules (Coming Soon)
+  # CodebuildEvents:
   #   Type: "AWS::Events::Rule"
   #   Properties: 
-  #     EventPattern: {"source": ["aws.codepipeline"],"detail-type": ["AWS API Call via CloudTrail"],"detail": {"eventSource": ["codepipeline.amazonaws.com"]}}
+  #     EventPattern: {"source": ["aws.codebuild"]}
   #     Targets:
   #       - Arn: !Ref NotificationSNS
-  #         Id: Pipeline-Start
-
-  # PipelineFailedEventAlert:
+  #         Id: Codebuild-Events
+  
+  # CloudFormationEvents:
   #   Type: "AWS::Events::Rule"
   #   Properties: 
-  #     EventPattern: {"source": ["aws.codepipeline"]}
+  #     EventPattern: {"source": ["aws.cloudformation"]}
   #     Targets:
   #       - Arn: !Ref NotificationSNS
-  #         Id: Codebuild-Error
+  #         Id: CloudFormation-Events
 
+
+## Stack Output
 Outputs:
   SNSTopicArn:
     Value: !Ref NotificationSNS

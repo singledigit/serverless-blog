@@ -2,6 +2,6 @@
 .DS_Store
 .env
 .vscode
-commands.txt
+commands.sh
 **/.sam
 **/.webpack
